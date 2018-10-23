@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # OR2YWTool
 Openrefine to Yesworkflow model tool
 ====================================
@@ -69,3 +70,6 @@ Serial-Parallel Model:
 
 
 
+=======
+# OR2YW
+>>>>>>> 88bd8d84fb34780048430859e760068ab1eb4944
