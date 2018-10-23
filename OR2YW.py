@@ -392,15 +392,14 @@ class OR2YW:
         with open("tmp.txt","w") as f:
             f.write(yw_script)
 
-        cmd = "cat tmp.txt | java -jar yesworkflow-0.2.2.0-jar-with-dependencies.jar graph -c extract.comment='#' > output-tmp.gv"
-        ps = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        cmd = "cat tmp.txt | java -jar yesworkflow-0.2.2.0-SNAPSHOT-jar-with-dependencies.jar graph -c extract.comment='#' > output-tmp.gv"
+        ps = subprocess.Popen(cmd, shell=True)
+	#ps = subprocess.Popen(["cat","tmp.txt"])
         ps.wait()
-        print 0
+	#call(cmd)
         cmd = "dot -Tpng output-tmp.gv -o output.png"
         # dot -Tpng gv/Linear.gv -o png/Linear.png
-        print 1
         ps = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        print 2
 
 
 if __name__ == '__main__':
