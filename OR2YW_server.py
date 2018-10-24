@@ -3,8 +3,10 @@ from flask import Flask
 
 
 app = Flask(__name__)
-or2yw = OR2YW()
 
 @app.route("/generate-image")
 def generate_image(operations):
-    return
+    operation_json = OR2YWGenerator.generate_yw_script(operations)
+    image_encoded = OR2YWGenerator.generate_yw_image(operation_json)
+
+    return "data:image/png;base64,{}".format(image_encoded)
