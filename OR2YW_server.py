@@ -6,7 +6,7 @@ from flask import request
 
 app = Flask(__name__)
 
-@app.route("/generate-image",method=["POST"])
+@app.route("/generate-image",methods=["POST"])
 def generate_image():
     if request.headers['Content-Type'] == 'application/json':
         operations = "JSON Message: " + json.dumps(request.json)
