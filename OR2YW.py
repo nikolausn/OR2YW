@@ -5,6 +5,9 @@ from openrefine_client_master.google.refine import refine
 from itertools import groupby
 import StringIO
 from subprocess import call
+import subprocess
+import uuid
+import base64
 
 
 class OR2YW:
@@ -114,7 +117,7 @@ class OR2YW:
 
         # parse into YW model
         # create a string buffer instead
-        #f = open('../yw/2Original_SPParseYW.txt', 'w')
+        # f = open('../yw/2Original_SPParseYW.txt', 'w')
         f = StringIO.StringIO()
         f.write('#@begin SPOriginalOR2#@desc Workflow of Linear original openrefine history\n')
         for sublist in list(deinputdatalist):
@@ -196,7 +199,7 @@ class OR2YW:
             innerlenth = len(splitlists[a])
             if splitlists[a][0]['op'] == 'core/column-split':
                 f.write('#@begin core/column-split%d' % colsplit_c + '#@desc %s\n' % (
-                splitlists[a][0]['description']) + '\n')
+                    splitlists[a][0]['description']) + '\n')
                 f.write('#@param separator:"%s"\n' % (splitlists[a][0]['separator']))
                 f.write('#@param removeOriginalColumn:%s\n' % splitlists[a][0]['removeOriginalColumn'])
                 f.write('#@param col-name:%s\n' % splitlists[a][0]['columnName'])
@@ -387,24 +390,65 @@ class OR2YW:
         return binary image
         :return:
         """
-        import subprocess
+        #import subprocess
         # create temporary file
-        with open("tmp.txt","w") as f:
+
+        # generate unique id for image creation
+        temp_folder = "/tmp/"
+        tempid = uuid.uuid4()
+        text_name = "tmp-"+tempid+".txt"
+        gv_name = "tmp-"+tempid+".gv"
+        png_name = "tmp-"+tempid+".png"
+        with open(temp_folder+text_name, "w") as f:
             f.write(yw_script)
 
-        cmd = "cat tmp.txt | java -jar yesworkflow-0.2.2.0-SNAPSHOT-jar-with-dependencies.jar graph -c extract.comment='#' > output-tmp.gv"
+        cmd = "cat {} | java -jar yesworkflow-0.2.2.0-SNAPSHOT-jar-with-dependencies.jar graph -c extract.comment='#' > {}".format(temp_folder+text_name,temp_folder+gv_name)
         ps = subprocess.Popen(cmd, shell=True)
-	#ps = subprocess.Popen(["cat","tmp.txt"])
+        # ps = subprocess.Popen(["cat","tmp.txt"])
         ps.wait()
-	#call(cmd)
-        cmd = "dot -Tpng output-tmp.gv -o output.png"
+        # call(cmd)
+        cmd = "dot -Tpng {} -o {}".format(temp_folder+gv_name,temp_folder+png_name)
         # dot -Tpng gv/Linear.gv -o png/Linear.png
         ps = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+
+class OR2YWGenerator:
+    @staticmethod
+    def generate_yw_image(yw_script, image_type=None):
+        """
+        given a yw_script return the image based on choice
+        id: yw_script string
+        return binary image
+        :return:
+        """
+        #import subprocess
+        # create temporary file
+
+        # generate unique id for image creation
+        temp_folder = "/tmp/"
+        tempid = uuid.uuid4()
+        text_name = "tmp-"+tempid+".txt"
+        gv_name = "tmp-"+tempid+".gv"
+        png_name = "tmp-"+tempid+".png"
+        with open(temp_folder+text_name, "w") as f:
+            f.write(yw_script)
+
+        cmd = "cat {} | java -jar yesworkflow-0.2.2.0-SNAPSHOT-jar-with-dependencies.jar graph -c extract.comment='#' > {}".format(temp_folder+text_name,temp_folder+gv_name)
+        ps = subprocess.Popen(cmd, shell=True)
+        # ps = subprocess.Popen(["cat","tmp.txt"])
+        ps.wait()
+        # call(cmd)
+        cmd = "dot -Tpng {} -o {}".format(temp_folder+gv_name,temp_folder+png_name)
+        # dot -Tpng gv/Linear.gv -o png/Linear.png
+        ps = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        ps.wait()
+        encoded = base64.b64encode(open(temp_folder+png_name, "rb").read())
+        return encoded
+
 
 
 if __name__ == '__main__':
     # get projects
-    or2yw = OR2YW(server_host="192.168.0.102",server_port="3333")
+    or2yw = OR2YW(server_host="192.168.0.102", server_port="3333")
     projects = or2yw.get_projects()
     print(projects)
     # get operations
@@ -412,5 +456,4 @@ if __name__ == '__main__':
     print(operations)
     yw_script = or2yw.generate_yw_script(operations["entries"])
     print(yw_script)
-    or2yw.generate_yw_image(yw_script)
-
+    print(OR2YW.generate_yw_image(yw_script))
