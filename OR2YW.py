@@ -456,4 +456,4 @@ if __name__ == '__main__':
     print(operations)
     yw_script = or2yw.generate_yw_script(operations["entries"])
     print(yw_script)
-    print(OR2YW.generate_yw_image(yw_script))
+    print(OR2YWGenerator.generate_yw_image(yw_script))
