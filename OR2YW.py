@@ -442,7 +442,7 @@ class OR2YWGenerator:
 
         # generate unique id for image creation
         temp_folder = "/tmp/"
-        tempid = uuid.uuid4()
+        tempid = str(uuid.uuid4())
         text_name = "tmp-"+tempid+".txt"
         gv_name = "tmp-"+tempid+".gv"
         png_name = "tmp-"+tempid+".png"
