@@ -1,11 +1,8 @@
-import Tkinter
-from Tkinter import *
 import tkFileDialog
 
 
 from Tkinter import *
 from OR2YW import OR2YW
-from PIL import ImageTk, Image
 import base64
 import tkMessageBox
 import os
