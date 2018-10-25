@@ -7,6 +7,10 @@ from Tkinter import *
 from OR2YW import OR2YW
 from PIL import ImageTk, Image
 import base64
+import tkMessageBox
+
+from subprocess import call
+
 
 class Application(Frame):
     def createWidgets(self):
@@ -21,13 +25,35 @@ class Application(Frame):
         self.button1["text"] = "Check"
         self.button1["command"] = self.check_projects
         self.button1.grid(row=0, column=2,sticky=W)
+
+        self.label2 = Label(self, text="Java Location:")
+        self.label2.grid(row=1,sticky=E)
+        self.entry2 = Entry(self)
+        self.entry2.grid(row=1, column=1,sticky=E+W)
+        self.entry2.insert(0,self._java_loc)
+        self.button2 = Button(self)
+        self.button2["text"] = "Open"
+        self.button2["command"] = self.check_projects
+        self.button2.grid(row=1, column=2,sticky=W)
+
+        self.label3 = Label(self, text="Dot Location:")
+        self.label3.grid(row=2, sticky=E)
+        self.entry3 = Entry(self)
+        self.entry3.grid(row=2, column=1, sticky=E + W)
+        self.entry3.insert(0, self._dot_loc)
+        self.button3 = Button(self)
+        self.button3["text"] = "Open"
+        self.button3["command"] = self.check_projects
+        self.button3.grid(row=2, column=2, sticky=W)
+
+
         self.listbox_projects = Listbox(self)
-        self.listbox_projects.grid(row=1,column=0,columnspan=3,sticky=N+E+W+S)
+        self.listbox_projects.grid(row=3,column=0,columnspan=3,sticky=N+E+W+S)
 
         self.button2 = Button(self)
         self.button2["text"] = "Generate Workflow"
         self.button2["command"] = self.generate_yw
-        self.button2.grid(row=3, column=0,columnspan=3,sticky=E+W)
+        self.button2.grid(row=4, column=0,columnspan=3,sticky=E+W)
 
         #self.image1 = Canvas(self)
         #self.image1.grid(row=1,column=3,sticky=N+E+W+S)
@@ -38,10 +64,14 @@ class Application(Frame):
         self.grid_columnconfigure(2, weight=0)
         self.grid_columnconfigure(3, weight=0)
         self.grid_rowconfigure(0, weight=0)
-        self.grid_rowconfigure(1, weight=1)
+        self.grid_rowconfigure(1, weight=0)
         self.grid_rowconfigure(2, weight=0)
+        self.grid_rowconfigure(3, weight=1)
+        self.grid_rowconfigure(4, weight=0)
 
-    def __init__(self, master=None):
+    def __init__(self, master=None, java_loc="",dot_loc=""):
+        self._java_loc = java_loc
+        self._dot_loc = dot_loc
         Frame.__init__(self, master)
         self.or2yw = OR2YW()
         self.pack()
@@ -72,12 +102,13 @@ class Application(Frame):
             encoded_image,file_name = OR2YW.generate_yw_image(yw_script)
 
             # store to file
-            png_filename = tkFileDialog.asksaveasfilename(initialdir="/", title="Select file",
+            png_filename = tkFileDialog.asksaveasfilename(initialdir=".", title="Select file",
                                                          filetypes=(("png files", "*.png"), ("all files", "*.*")))
 
             image_bin = base64.decodestring(encoded_image)
             with open(png_filename,"wb") as file:
                 file.write(image_bin)
+                tkMessageBox.showinfo("Message","Workflow {} saved succesfully".format(self._list_projects[x][1]["name"]))
 
             """
             print file_name
@@ -128,6 +159,18 @@ class Application(Frame):
 
         #mainloop()
 
+import subprocess
+process = subprocess.Popen("which java",shell=True, stdout=subprocess.PIPE)
+output = process.stdout.readline()
+java_loc = ""
+if len(output)>0:
+    java_loc = output
+process = subprocess.Popen("which dot",shell=True, stdout=subprocess.PIPE)
+output = process.stdout.readline()
+dot_loc = ""
+if len(output)>0:
+    dot_loc = output
+
 
 root = Tk()
 root.title('Open Refine to Yes Workflow (OR2YW)')
@@ -135,6 +178,6 @@ root.geometry('800x600') # Size 200, 200
 
 Grid.rowconfigure(root, 0, weight=1)
 Grid.columnconfigure(root, 0, weight=1)
-app = Application(master=root)
+app = Application(master=root,java_loc=java_loc,dot_loc=dot_loc)
 app.mainloop()
 root.destroy()

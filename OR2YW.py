@@ -426,7 +426,7 @@ class OR2YW:
             # delete the temporary files
             os.remove(temp_folder+text_name)
             os.remove(temp_folder+gv_name)
-            #os.remove(temp_folder+png_name)
+            os.remove(temp_folder+png_name)
 
 class OR2YWGenerator:
     @staticmethod
