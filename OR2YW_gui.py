@@ -33,7 +33,7 @@ class Application(Frame):
         self.entry2.insert(0,self._java_loc)
         self.button2 = Button(self)
         self.button2["text"] = "Open"
-        self.button2["command"] = self.check_projects
+        self.button2["command"] = self.open_java
         self.button2.grid(row=1, column=2,sticky=W)
 
         self.label3 = Label(self, text="Dot Location:")
@@ -43,17 +43,17 @@ class Application(Frame):
         self.entry3.insert(0, self._dot_loc)
         self.button3 = Button(self)
         self.button3["text"] = "Open"
-        self.button3["command"] = self.check_projects
+        self.button3["command"] = self.open_dot
         self.button3.grid(row=2, column=2, sticky=W)
 
 
         self.listbox_projects = Listbox(self)
         self.listbox_projects.grid(row=3,column=0,columnspan=3,sticky=N+E+W+S)
 
-        self.button2 = Button(self)
-        self.button2["text"] = "Generate Workflow"
-        self.button2["command"] = self.generate_yw
-        self.button2.grid(row=4, column=0,columnspan=3,sticky=E+W)
+        self.button4 = Button(self)
+        self.button4["text"] = "Generate Workflow"
+        self.button4["command"] = self.generate_yw
+        self.button4.grid(row=4, column=0,columnspan=3,sticky=E+W)
 
         #self.image1 = Canvas(self)
         #self.image1.grid(row=1,column=3,sticky=N+E+W+S)
@@ -158,6 +158,37 @@ class Application(Frame):
             self._list_projects.append((project,item))
 
         #mainloop()
+
+    def open_java(self):
+        init_dir = "/"
+        if len(self._java_loc)>0:
+            init_dir = self._java_loc
+        java_filename = tkFileDialog.askopenfilename(initialdir=init_dir, title="Select Java",
+                                                      filetypes=(("png files", "*.png"), ("all files", "*.*")))
+        if len(java_filename)>0:
+            self._java_loc = java_filename
+
+        self.entry2.insert(0,self._java_loc)
+
+    def open_dot(self):
+        init_dir = "/"
+        if len(self._dot_loc) > 0:
+            init_dir = self._dot_loc
+        dot_filename = tkFileDialog.askopenfilename(initialdir=init_dir, title="Select Java",
+                                                     filetypes=(("png files", "*.png"), ("all files", "*.*")))
+        if len(dot_filename) > 0:
+            self._dot_loc = dot_filename
+
+        self.entry3.insert(0, self._dot_loc)
+
+    def open_java(self):
+        init_dir = "/"
+        if len(self._java_loc)>0:
+            init_dir = self._java_loc
+        java_filename = tkFileDialog.askopenfilename(initialdir=init_dir, title="Select Java",
+                                                      filetypes=(("png files", "*.png"), ("all files", "*.*")))
+        if len(java_filename)>0:
+            self._java_loc = java_filename
 
 import subprocess
 process = subprocess.Popen("which java",shell=True, stdout=subprocess.PIPE)

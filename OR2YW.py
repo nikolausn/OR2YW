@@ -53,10 +53,18 @@ class OR2YW:
         return yw_script (text / string)
         :return:
         """
-        data = [x["operation"] for x in operations]
+        temp_data = [x["operation"] for x in operations]
+        data = []
+        for tdata in temp_data:
+            if "columnName" in tdata.keys():
+                data.append(tdata)
+
         print(json.dumps(data))
         # first part rename and output dtable
         rename_c = 0
+
+
+
         for dicts in data:
             if dicts['op'] == 'core/column-rename':
                 rename_c += 1
