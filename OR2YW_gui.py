@@ -8,6 +8,7 @@ from OR2YW import OR2YW
 from PIL import ImageTk, Image
 import base64
 import tkMessageBox
+import os
 
 from subprocess import call
 
@@ -26,25 +27,37 @@ class Application(Frame):
         self.button1["command"] = self.check_projects
         self.button1.grid(row=0, column=2,sticky=W)
 
+        def callback_java(sv):
+            self._java_loc = sv.get().strip()
+
+        sv1 = StringVar()
+        sv1.trace("w", lambda name, index, mode, sv=sv1: callback_java(sv))
+
         self.label2 = Label(self, text="Java Location:")
         self.label2.grid(row=1,sticky=E)
-        self.entry2 = Entry(self)
+        self.entry2 = Entry(self,textvariable=sv1)
         self.entry2.grid(row=1, column=1,sticky=E+W)
         self.entry2.insert(0,self._java_loc)
-        self.button2 = Button(self)
-        self.button2["text"] = "Open"
-        self.button2["command"] = self.open_java
-        self.button2.grid(row=1, column=2,sticky=W)
+        #self.button2 = Button(self)
+        #self.button2["text"] = "Open"
+        #self.button2["command"] = self.open_java
+        #self.button2.grid(row=1, column=2,sticky=W)
+
+        def callback_dot(sv):
+            self._dot_loc = sv.get().strip()
+
+        sv2 = StringVar()
+        sv2.trace("w", lambda name, index, mode, sv=sv2: callback_dot(sv))
 
         self.label3 = Label(self, text="Dot Location:")
         self.label3.grid(row=2, sticky=E)
-        self.entry3 = Entry(self)
+        self.entry3 = Entry(self,textvariable=sv2)
         self.entry3.grid(row=2, column=1, sticky=E + W)
         self.entry3.insert(0, self._dot_loc)
-        self.button3 = Button(self)
-        self.button3["text"] = "Open"
-        self.button3["command"] = self.open_dot
-        self.button3.grid(row=2, column=2, sticky=W)
+        #self.button3 = Button(self)
+        #self.button3["text"] = "Open"
+        #self.button3["command"] = self.open_dot
+        #self.button3.grid(row=2, column=2, sticky=W)
 
 
         self.listbox_projects = Listbox(self)
@@ -99,7 +112,16 @@ class Application(Frame):
 
             yw_script = OR2YW.generate_yw_script(json_operations["entries"])
             print(yw_script)
-            encoded_image,file_name = OR2YW.generate_yw_image(yw_script)
+
+            if not os.path.isfile(self._java_loc):
+                tkMessageBox.showerror("Java Not Found","You must install java to generate the workflow")
+                return
+
+            if not os.path.isfile(self._dot_loc):
+                tkMessageBox.showerror("Dot Not Found","You must install GraphViz (dot) to generate the workflow")
+                return
+
+            encoded_image,file_name = OR2YW.generate_yw_image(yw_script,dot_file=self._dot_loc,java_file=self._java_loc)
 
             # store to file
             png_filename = tkFileDialog.asksaveasfilename(initialdir=".", title="Select file",
@@ -195,12 +217,12 @@ process = subprocess.Popen("which java",shell=True, stdout=subprocess.PIPE)
 output = process.stdout.readline()
 java_loc = ""
 if len(output)>0:
-    java_loc = output
+    java_loc = output.strip()
 process = subprocess.Popen("which dot",shell=True, stdout=subprocess.PIPE)
 output = process.stdout.readline()
 dot_loc = ""
 if len(output)>0:
-    dot_loc = output
+    dot_loc = output.strip()
 
 
 root = Tk()

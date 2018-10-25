@@ -396,7 +396,7 @@ class OR2YW:
 
 
     @staticmethod
-    def generate_yw_image(yw_script, image_type=None):
+    def generate_yw_image(yw_script, java_file=None,dot_file=None , image_type=None):
         """
         given a yw_script return the image based on choice
         id: yw_script string
@@ -416,14 +416,14 @@ class OR2YW:
             with open(temp_folder+text_name, "w") as f:
                 f.write(yw_script)
 
-            cmd = "cat {} | java -jar yesworkflow-0.2.2.0-SNAPSHOT-jar-with-dependencies.jar graph -c extract.comment='#' > {}".format(temp_folder+text_name,temp_folder+gv_name)
+            cmd = "cat {} | {} -jar yesworkflow-0.2.2.0-SNAPSHOT-jar-with-dependencies.jar graph -c extract.comment='#' > {}".format(temp_folder+text_name,java_file,temp_folder+gv_name)
             ps = subprocess.Popen(cmd, shell=True)
             # ps = subprocess.Popen(["cat","tmp.txt"])
             ps.wait()
             #time.sleep(5)
 
             # call(cmd)
-            cmd = "/opt/local/bin/dot -Tpng {} -o {}".format(temp_folder+gv_name,temp_folder+png_name)
+            cmd = "{} -Tpng {} -o {}".format(dot_file,temp_folder+gv_name,temp_folder+png_name)
             # dot -Tpng gv/Linear.gv -o png/Linear.png
             print(cmd)
             ps = subprocess.Popen(cmd, shell=True)
