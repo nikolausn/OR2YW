@@ -54,6 +54,7 @@ class OR2YW:
         :return:
         """
         data = [x["operation"] for x in operations]
+        print(json.dumps(data))
         # first part rename and output dtable
         rename_c = 0
         for dicts in data:
