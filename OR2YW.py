@@ -9,7 +9,7 @@ import subprocess
 import uuid
 import base64
 import os
-
+import time
 
 class OR2YW:
     def __init__(self, server_host="localhost", server_port="3333", doc_root="/"):
@@ -45,7 +45,8 @@ class OR2YW:
                                        project_id=id).get_operations()
         return json.loads(outputs.read())
 
-    def generate_yw_script(self, operations):
+    @staticmethod
+    def generate_yw_script(operations):
         """
         given a list of operations in dictionary format, return yes workflow script in text
         id: list of operations dictionary / json format
@@ -384,7 +385,9 @@ class OR2YW:
 
         return output_string
 
-    def generate_yw_image(self, yw_script, image_type=None):
+
+    @staticmethod
+    def generate_yw_image(yw_script, image_type=None):
         """
         given a yw_script return the image based on choice
         id: yw_script string
@@ -395,31 +398,35 @@ class OR2YW:
         # create temporary file
 
         # generate unique id for image creation
-        temp_folder = "/tmp/"
-        tempid = str(uuid.uuid4())
-        text_name = "tmp-"+tempid+".txt"
-        gv_name = "tmp-"+tempid+".gv"
-        png_name = "tmp-"+tempid+".png"
-        with open(temp_folder+text_name, "w") as f:
-            f.write(yw_script)
+        try:
+            temp_folder = ""
+            tempid = str(uuid.uuid4())
+            text_name = "tmp-"+tempid+".txt"
+            gv_name = "tmp-"+tempid+".gv"
+            png_name = "tmp-"+tempid+".png"
+            with open(temp_folder+text_name, "w") as f:
+                f.write(yw_script)
 
-        cmd = "cat {} | java -jar yesworkflow-0.2.2.0-SNAPSHOT-jar-with-dependencies.jar graph -c extract.comment='#' > {}".format(temp_folder+text_name,temp_folder+gv_name)
-        ps = subprocess.Popen(cmd, shell=True)
-        # ps = subprocess.Popen(["cat","tmp.txt"])
-        ps.wait()
-        # call(cmd)
-        cmd = "dot -Tpng {} -o {}".format(temp_folder+gv_name,temp_folder+png_name)
-        # dot -Tpng gv/Linear.gv -o png/Linear.png
-        ps = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        ps.wait()
-        encoded = base64.b64encode(open(temp_folder+png_name, "rb").read())
+            cmd = "cat {} | java -jar yesworkflow-0.2.2.0-SNAPSHOT-jar-with-dependencies.jar graph -c extract.comment='#' > {}".format(temp_folder+text_name,temp_folder+gv_name)
+            ps = subprocess.Popen(cmd, shell=True)
+            # ps = subprocess.Popen(["cat","tmp.txt"])
+            ps.wait()
+            #time.sleep(5)
 
-
-        # delete the temporary files
-        os.remove(temp_folder+text_name)
-        os.remove(temp_folder+gv_name)
-        os.remove(temp_folder+png_name)
-        return encoded
+            # call(cmd)
+            cmd = "/opt/local/bin/dot -Tpng {} -o {}".format(temp_folder+gv_name,temp_folder+png_name)
+            # dot -Tpng gv/Linear.gv -o png/Linear.png
+            print(cmd)
+            ps = subprocess.Popen(cmd, shell=True)
+            #ps = subprocess.Popen(["/opt/local/bin/dot","-Tpng",temp_folder+gv_name,"-o",temp_folder+png_name])
+            ps.wait()
+            encoded = base64.b64encode(open(temp_folder+png_name, "rb").read())
+            return (encoded, temp_folder+png_name)
+        finally:
+            # delete the temporary files
+            os.remove(temp_folder+text_name)
+            os.remove(temp_folder+gv_name)
+            #os.remove(temp_folder+png_name)
 
 class OR2YWGenerator:
     @staticmethod
