@@ -3,14 +3,6 @@ import json
 
 from itertools import groupby
 import StringIO
-"""
-from subprocess import call
-import subprocess
-import uuid
-import base64
-import os
-import time
-"""
 
 class OR2YW:
     def __init__(self):
