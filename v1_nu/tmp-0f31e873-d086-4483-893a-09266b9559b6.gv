@@ -1,0 +1,61 @@
+digraph Workflow {
+rankdir=LR
+fontname=Helvetica; fontsize=18; labelloc=t
+label="SPOriginalOR2#"
+subgraph cluster_workflow_box_outer { label=""; color=black; penwidth=2
+subgraph cluster_workflow_box_inner { label=""; penwidth=0
+node[shape=box style=filled fillcolor="#CCFFCC" peripheries=1 fontname=Helvetica]
+"core/text-transform0#" [shape=record rankdir=LR label="{{<f0> core/text-transform0# |<f1> Text transform on cells in column MarketNameClean using expression value.toLowercase()}}"];
+"core/mass-edit0#" [shape=record rankdir=LR label="{{<f0> core/mass-edit0# |<f1> Mass edit cells in column MarketNameClean}}"];
+"core/mass-edit1#" [shape=record rankdir=LR label="{{<f0> core/mass-edit1# |<f1> Mass edit cells in column MarketNameClean}}"];
+"core/text-transform1#" [shape=record rankdir=LR label="{{<f0> core/text-transform1# |<f1> Text transform on cells in column updateTime using expression value.toDate()}}"];
+"core/text-transform2#" [shape=record rankdir=LR label="{{<f0> core/text-transform2# |<f1> Text transform on cells in column updateTime using expression jython\:value}}"];
+"core/text-transform3#" [shape=record rankdir=LR label="{{<f0> core/text-transform3# |<f1> Text transform on cells in column x using expression value.toNumber()}}"];
+"core/text-transform4#" [shape=record rankdir=LR label="{{<f0> core/text-transform4# |<f1> Text transform on cells in column y using expression value.toNumber()}}"];
+MergeOperationsColumns [shape=record rankdir=LR label="{{<f0> MergeOperationsColumns |<f1> Merge the Parallel Column operations}}"];
+edge[fontname=Helvetica]
+"core/text-transform0#" -> "core/mass-edit0#" [label="col:MarketNameClean1"]
+"core/mass-edit0#" -> "core/mass-edit1#" [label="col:MarketNameClean2"]
+"core/text-transform1#" -> "core/text-transform2#" [label="col:updateTime1"]
+"core/text-transform2#" -> MergeOperationsColumns [label="col:updateTime2"]
+"core/text-transform3#" -> MergeOperationsColumns [label="col:x1"]
+"core/text-transform4#" -> MergeOperationsColumns [label="col:y1"]
+}}
+subgraph cluster_input_ports_group_outer { label=""; penwidth=0
+subgraph cluster_input_ports_group_inner { label=""; penwidth=0
+node[shape=circle style=filled fillcolor="#FFFFFF" peripheries=1 fontname=Helvetica width=0.2]
+"col-name:MarketNameClean_input_port" [label=""]
+"expression:jython:value_input_port" [label=""]
+"col-name:x_input_port" [label=""]
+"col-name:y_input_port" [label=""]
+"expression:value.toDate()_input_port" [label=""]
+"col-name:updateTime_input_port" [label=""]
+"expression:value.toLowercase()_input_port" [label=""]
+"expression:value.toNumber()_input_port" [label=""]
+table0_input_port [label=""]
+}}
+subgraph cluster_output_ports_group_outer { label=""; penwidth=0
+subgraph cluster_output_ports_group_inner { label=""; penwidth=0
+node[shape=circle style=filled fillcolor="#FFFFFF" peripheries=1 fontname=Helvetica width=0.2]
+table1_output_port [label=""]
+}}
+edge[fontname=Helvetica]
+"col-name:MarketNameClean_input_port" -> "core/text-transform0#" [label="col-name:MarketNameClean"]
+"col-name:MarketNameClean_input_port" -> "core/mass-edit0#" [label="col-name:MarketNameClean"]
+"col-name:MarketNameClean_input_port" -> "core/mass-edit1#" [label="col-name:MarketNameClean"]
+"expression:value.toLowercase()_input_port" -> "core/text-transform0#" [label="expression:value.toLowercase()"]
+table0_input_port -> "core/text-transform0#" [label=table0]
+table0_input_port -> "core/text-transform1#" [label=table0]
+table0_input_port -> "core/text-transform3#" [label=table0]
+table0_input_port -> "core/text-transform4#" [label=table0]
+"col-name:updateTime_input_port" -> "core/text-transform1#" [label="col-name:updateTime"]
+"col-name:updateTime_input_port" -> "core/text-transform2#" [label="col-name:updateTime"]
+"expression:value.toDate()_input_port" -> "core/text-transform1#" [label="expression:value.toDate()"]
+"expression:jython:value_input_port" -> "core/text-transform2#" [label="expression:jython:value"]
+"col-name:x_input_port" -> "core/text-transform3#" [label="col-name:x"]
+"expression:value.toNumber()_input_port" -> "core/text-transform3#" [label="expression:value.toNumber()"]
+"expression:value.toNumber()_input_port" -> "core/text-transform4#" [label="expression:value.toNumber()"]
+"col-name:y_input_port" -> "core/text-transform4#" [label="col-name:y"]
+edge[fontname=Helvetica]
+MergeOperationsColumns -> table1_output_port [label=table1]
+}
